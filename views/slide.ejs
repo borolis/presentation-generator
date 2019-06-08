@@ -1,0 +1,83 @@
+﻿
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <% include blocks/slideHead.ejs%>
+  </head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+
+
+    <% include blocks/navbar.ejs%>
+    <div>
+      <div class="container">
+        <div class="row centered">
+          <div class="col-lg-8 col-lg-offset-2">
+            <h1>Мои презентации</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+              <div class="row">
+                <div class="col-lg-5">
+                  <div class="container-fluid" style="background-color: #F8F8FF">
+                    <form method="POST">
+                      <div class="form-group">
+                        <center><label for="textEditor">Текст элемента</label></center>
+                        <textarea class="form-control" rows="5" id="textEditor" name="textEditor"></textarea>
+
+                          <!--
+                        <textarea class="d-none" rows="1" name="slideDir">@ViewBag.presDir</textarea>
+                        <textarea class="d-none" rows="1" name="slideBg">@ViewBag.BackgroundPath</textarea>
+                        <textarea class="d-none" rows="1" name="slideId">@ViewBag.SlideId</textarea>
+                        <textarea class="d-none" rows="1" name="slideName">@ViewBag.SlideName</textarea>
+                        -->
+
+                        <a class="btn btn-primary text-center my-2 mx-auto" id="btnSave" href="#" role="button">Скачать презентацию</a>
+                        <a class="btn btn-success text-center my-2 mx-auto" id="btnAddLayer" href="#" role="button"> Добавить слой</a>
+
+                      </div>
+                    </form>
+
+                    <div class="container-fluid">
+
+                      <div class="row">
+                        <div class="brd">
+                          <a class="btn btn-secondary " href="@Url.Content(ViewBag.PreviousSlide)" role="button">Предыдущий слайд</a>
+                        </div>
+
+                        <div class="brd">
+                          <a class="btn btn-secondary " href="@Url.Content(ViewBag.NextSlide)" role="button">Следующий слайд</a>
+                        </div>
+
+
+                      </div>
+                    </div>
+
+
+                  </div>
+                </div>
+
+                <div id="slide" class="col-lg-6">
+                    <div class="container-fluid draggable">
+                    <h1 style="text-align: center;">Default Title</h1>
+                  </div>
+                  <div class="container-fluid draggable">
+                    <div style="text-align: center;"><span style="font-size: 1rem;">съешь еще этих мягких французских булок да выпей чаю</span></div>
+                  </div>
+
+                    <div class="container-fluid draggable">
+                        <div style="text-align: center;"><span>Text</span></div>
+                    </div>
+                </div>
+              </div>
+      </div>
+
+
+
+
+  </body>
+
+</html>

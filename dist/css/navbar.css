@@ -1,0 +1,17 @@
+.navbar {
+    font-family: "Source Sans Pro";
+    font-weight: 800;
+    font-size: 18px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+.navbar-brand {
+    font-size: 24px;
+}
+
+.navbar-inverse {
+    font-family: "Source Sans Pro";
+    background:#4b4c50;
+    border-color: #4b4c50;
+}
+
