@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Horizontal examples - Sly</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="css/ospb.css">
+    <link rel="stylesheet" href="css/horizontal.css">
+    <script src="js/vendor/modernizr.js"></script>
+</head>
+<body>
+
+<div class="pagespan container">
+
+    <div class="wrap">
+        <h2>Centered</h2>
+
+        <div class="scrollbar">
+            <div class="handle">
+                <div class="mousearea"></div>
+            </div>
+        </div>
+
+        <div class="frame" id="centered">
+            <ul class="clearfix">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+            </ul>
+        </div>
+
+        <div class="controls center">
+            <button class="btn prev"><i class="icon-chevron-left"></i> prev</button>
+            <button class="btn next">next <i class="icon-chevron-right"></i></button>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Scripts -->
+<script src="lib/jquery/jquery.min.js"></script>
+<script src="js/plugins.js"></script>
+<script src="http://darsain.github.io/sly/js/sly.min.js"></script>
+<!-- <script src="js/horizontal.js"></script> -->
+
+<script>
+    let $frame = $('#centered');
+    let $wrap  = $frame.parent();
+
+    // Call Sly on frame
+    $frame.sly({
+        horizontal: 1,
+        itemNav: 'centered',
+        smart: 1,
+        activateOn: 'click',
+        mouseDragging: 1,
+        touchDragging: 1,
+        releaseSwing: 1,
+        startAt: 0,
+        scrollBar: $wrap.find('.scrollbar'),
+        scrollBy: 1,
+        speed: 300,
+        elasticBounds: 1,
+        easing: 'easeOutExpo',
+        dragHandle: 1,
+        dynamicHandle: 1,
+        clickBar: 1,
+
+        // Buttons
+        prev: $wrap.find('.prev'),
+        next: $wrap.find('.next')
+    });
+</script>
+
+</body>
+</html>

@@ -80,27 +80,47 @@ app.get('/', async (req, res) => {
 
 
 app.post('/new', upload.single('background'), async function (req, res, next) {
-    //console.log(req.body)
-    console.log('back:' + req.file.filename)
-    console.log('name:' + req.body.presentationName)
-    console.log('slides:' + req.body.countOfSlides)
-    let path = 'upload/' + req.file.filename
+    let user = req.user
+    if(user === undefined)
+    {
+        return;
+    }
 
-    let imageId = await dbFunctions.newImage(req.user, path, 'kek')
+    let presentationName = req.body.presentationName
+    let countOfSlides = req.body.countOfSlides
+    let backGroundFilename = req.file.filename
 
 
-    console.log('image id returned:' + imageId)
-    dbFunctions.newPresentation(req.user, req.body.presentationName, req.body.countOfSlides, imageId)
-    //dbFunctions.newPresentation(req.user, req.body. )
+    console.log('New request: addition')
+    console.log('back:' + backGroundFilename)
+    console.log('name:' + presentationName)
+    console.log('slides:' + countOfSlides)
+    console.log(' ')
+
+    let path = 'upload/' + backGroundFilename
+
+    let imageId = await dbFunctions.newImage(user, path, 'kek')
+
+
+
+    let insertedPresentationId = await dbFunctions.newPresentation(user, presentationName, countOfSlides, imageId)
+
+    let slidesId = []
+    //make slides for presentation
+    for(let i = 0; i < req.body.countOfSlides; i++) {
+        slidesId.push(await dbFunctions.addNewSlide(user, insertedPresentationId))
+    }
+    console.log('slidesID:')
+    console.log(slidesId)
+
+    let updatedRow = await dbFunctions.updatePresentation(user, insertedPresentationId, presentationName, countOfSlides, imageId, slidesId)
+
+    console.log('updatedRow:' + updatedRow)
+
     res.redirect('/')
-    // req.file is the `avatar` file
-    // req.body will hold the text fields, if there were any
+
 })
 
-app.post('/api/v2', (req,res)=>{
-    console.log(req.body)
-    res.send(req.body)
-});
 app.post('/api/v1', apiHandler);
 
 
@@ -126,17 +146,24 @@ async function apiHandler(req, res) {
 
     switch (req.body.query) {
         case 'getMyPresentations': {
-            jsonResponse.result = await getMyPresentations(req)
-            ///TODO get list of presentations
+            jsonResponse.result = {}
+            jsonResponse.result.presentations = await getMyPresentations(req)
             break;
         }
 
         case 'getPresentation': {
+            console.log('here1')
+            jsonResponse.result = {}
+            jsonResponse.result.presentation = await getPresentation(req)
+
             ///TODO get one presentation by ID
             break;
         }
 
         case 'getSlidesForPresentation': {
+            jsonResponse.result = {}
+            jsonResponse.result.slides = await getSlidesForPresentation(req)
+            //jsonResponse.req = req.body
             ///TODO get list of slides by presentationID
             break;
         }
@@ -152,6 +179,9 @@ async function apiHandler(req, res) {
         }
 
         case 'updateSlide': {
+            jsonResponse.result = {}
+            jsonResponse.result.request = req.body
+            jsonResponse.result.updatedId = await updateSlide(req)
             ///TODO update one slide by slideID
             break;
         }
@@ -170,6 +200,13 @@ async function apiHandler(req, res) {
 app.get('/slide', async(req, res)=> {
     res.status(200)
     res.render("slide.ejs", {
+        username:req.user.username,
+    })
+})
+
+app.get('/slider', async(req, res)=> {
+    res.status(200)
+    res.render("slider.ejs", {
         username:req.user.username,
     })
 })
@@ -249,6 +286,54 @@ app.post('/newRequest', async (req, res) => {
 
 async function getMyPresentations(req) {
     let presentations ={}
-    presentations.presentations = await dbFunctions.getMyPresentations(req.user);
-    return presentations
+    return await dbFunctions.getMyPresentations(req.user);
+
+}
+
+async function getPresentation(req)
+{
+    let presentationId = req.body.data.presentationId
+    let user = req.user
+
+    //console.log('presentationId')
+    //console.log(presentationId)
+    //console.log('user')
+    //console.log(user)
+
+    let presentation ={}
+    presentation = await dbFunctions.getPresentationById(presentationId, user);
+    return presentation
+}
+
+
+
+
+async function updateSlide(req)
+{
+    //let presentationId = req.body.data.presentationId
+    let user = req.user
+    let slide = req.body.data.slide
+
+    //console.log('presentationId')
+    //console.log(presentationId)
+    //console.log('user')
+    //console.log(user)
+
+    return await dbFunctions.updateSlide(slide, user);
+}
+
+
+async function getSlidesForPresentation(req)
+{
+    let presentationId = req.body.data.presentationId
+    let user = req.user
+
+    //console.log('presentationId')
+    //console.log(presentationId)
+    //console.log('user')
+    //console.log(user)
+
+    let slides = []
+    slides = await dbFunctions.getSlidesForPresentation(presentationId, user);
+    return slides
 }

@@ -4,14 +4,16 @@ let allPresentations
 function onEditClick(event) {
     //console.log(event)
     let presentationId = event.currentTarget.parentElement.parentElement.parentElement.parentElement.getAttribute('presentationId')
-    console.log('edit '+presentationId)
+    localStorage.setItem( 'currentPresentationId', presentationId );
+    console.log('edit:' + presentationId)
+    window.location.href = '/slide'
     //alert( "Edit clicked" )
 }
 
 function onRemoveClick(event) {
 
     let presentationId = event.currentTarget.parentElement.parentElement.parentElement.parentElement.getAttribute('presentationId')
-    console.log('remove ' + presentationId)
+    console.log('remove:' + presentationId)
 }
 
 function addPresentationToList(currentPresentation)
@@ -29,8 +31,6 @@ function addPresentationToList(currentPresentation)
 
         $(".presentation-list").append(row)
         $(".presentation-list").append(table)
-        ///TODO A ROW
-        ///TODO ADD BLOCK
     }
 
        // console.log(allPresentations)
@@ -72,26 +72,24 @@ function addPresentationToList(currentPresentation)
 
     $(".row.presentations").last().append(presentationHtml)
 
-        ///TODO JUST ADD BLOCK
-        countOfBlocks++
+    countOfBlocks++
 }
 
 
 
-$(document).ready(function() {
-    let indx = 1
-    $.post( "/api/v1", { query: "getMyPresentations" }, (data) => {
-        allPresentations = data.result.presentations
-        allPresentations.forEach((currentPresentation)=> {
-            addPresentationToList(currentPresentation)
+$(document).ready(function () {
+    axios.post('/api/v1', {query: "getMyPresentations"})
+        .then((response) => {
+            console.log(response)
+            allPresentations = response.data.result.presentations
+            allPresentations.forEach((currentPresentation) => {
+                addPresentationToList(currentPresentation)
+            })
+            $('.btn.edit').click(onEditClick)
+
+            $('.btn.remove').click(onRemoveClick)
         })
-        $('.btn.edit').click(onEditClick)
-
-        $('.btn.remove').click(onRemoveClick)
-
-    }, "json");
-
-
-   // alert('lel')
-    //$(".img").children().attr('src','/upload/1.jpg');
+        .catch((error) => {
+            alert(error)
+        })
 })
