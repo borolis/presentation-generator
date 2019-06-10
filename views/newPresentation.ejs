@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Создать новую презентацию</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="js/newPresentation.js"></script>
+  <!-- Bootstrap CSS File -->
+  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="lib/bootstrap/css/bootstrap-grid.css" rel="stylesheet">
+
+  <!-- Libraries CSS Files -->
+  <link href="lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+  <link href="http://fonts.googleapis.com/css?family=Lustria|Lato:300,400,700,400italic" rel="stylesheet" type="text/css">
+
+  <!-- Main Stylesheet File -->
+  <link href="css/newPresentationStyle.css" rel="stylesheet">
+
+</head>
+
+<body data-spy="scroll" data-target=".bs-docs-sidebar"> 
+
+  <div id="headerwrap">
+    <div class="container">
+      <div class="row centered">
+        <div class="col-lg-8 col-lg-offset-2">
+          <h1>Создать новую презентацию</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <form method="post" action="http://borolis.party:8080/new" enctype="multipart/form-data">
+    <div class="container">
+    <div class="row">
+      <div class="col-lg-6 col-lg-offset-3">
+        <div class="item-group">
+          <div class="item-group__title">Название</div>
+          <input id="modalinputtitle" type="text" name="presentationName" class="td-input" value="" placeholder="My presentation">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 col-lg-offset-3">
+        <div class="item-group">
+          <div class="item-group__title">Количество слайдов</div>
+          <input id="inputnumber" type="number" min="1" name="countOfSlides" class="td-input" value="" placeholder="1">
+        </div>                
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-6 col-lg-offset-3">
+      <div class="item-group">
+        <div class="item-group__title">Выбор фона</div>
+        <div class="form-group">
+          <input type="file" name="background" id="file" class="input-file">
+          <label for="file" class="btn-bottom-left">
+            <span class="btn-load"><i class="icon fa fa-upload"></i> Загрузить изображение</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6 col-lg-offset-3">
+      <span id="output"></span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-6 col-lg-offset-3">
+      <div class="item-group">
+        <div class="btn-bottom-right">
+          <a href="#" onclick="return true">
+          <input type="submit" value="Создать" class="btn-create">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  </form>
+  
+
+<script>
+
+
+
+  function handleFileSelectSingle(evt) {
+    var file = evt.target.files; // FileList object
+
+    var f = file[0]
+
+      // Only process image files.
+      if (!f.type.match('image.*')) {
+        alert("Загружать можно только изображение...");
+      }
+
+      var reader = new FileReader();
+
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        return function(e) {
+          // Render thumbnail.
+          var span = document.createElement('span');
+          span.innerHTML = ['<img class="img-thumbnail" src="', e.target.result,
+          '" title="', escape(theFile.name), '"/>'].join('');
+          document.getElementById('output').innerHTML = "";
+          document.getElementById('output').insertBefore(span, null);
+        };
+      })(f);
+
+      // Read in the image file as a data URL.
+      reader.readAsDataURL(f);
+    }
+
+    document.getElementById('file').addEventListener('change', handleFileSelectSingle, false);
+  </script>
+
+
+</body>
+</html>

@@ -8,7 +8,7 @@ async function getImagePathById(imageId, userId) {
         values = [imageId, userId];
     return await db.query(sql, values)
         .then((data) => {
-            console.log("here")
+            //console.log("here")
             //console.log(data);
             return {
                 id: data.rows[0]._id,
@@ -29,7 +29,7 @@ async function getPresentationById(presentationId, userId) {
         values = [presentationId, userId];
     return await db.query(sql, values)
         .then((data) => {
-            console.log(data);
+            //console.log(data);
             return {
                 id: data.rows[0]._id,
                 owner_id: data.rows[0]._owner_id,
@@ -40,6 +40,68 @@ async function getPresentationById(presentationId, userId) {
             console.log(err);
             return null;
         });
+}
+
+async function newPresentation(user, presentationName, countOfSlides, previewImage)
+{
+    if (user === undefined) {
+        return null;
+    }
+
+
+
+    let owner_id = user.id
+    let content = {
+        preview_image: previewImage,
+        name: presentationName,
+        count_of_slides: countOfSlides
+    }
+
+    ///TODO make slides for presentation
+
+    let sql = 'INSERT INTO presentations (_owner_id, _content) VALUES($1, $2) RETURNING *',
+        values = [owner_id, content];
+
+    await db.query(sql, values, (err, res) => {
+        if (err) {
+            console.log(err.stack)
+        } else {
+            //console.log('query result')
+            //console.log(res.rows[0])
+            return res.rows[0]._id
+            // { name: 'brianc', email: 'brian.m.carlson@gmail.com' }
+        }
+    })
+    //console.log(values)
+}
+
+
+async function newImage(user, path, something)
+{
+    if (user === undefined) {
+        return null;
+    }
+
+    let owner_id = user.id
+
+
+    let sql = 'INSERT INTO images (_owner_id, _path, _something) VALUES($1, $2, $3) RETURNING *',
+        values = [owner_id, path, something];
+
+    let result = await new Promise((resolve, reject)=> {
+        db.query(sql, values, (err, res ) => {
+            if (err) {
+                console.log(err.stack)
+                reject(err.stack)
+            } else {
+                console.log(res.rows[0])
+                console.log('blyadskiy ID ' + res.rows[0]._id)
+
+                resolve(res.rows[0]._id)
+            }
+        })
+    })
+    return result
 }
 
 async function getMyPresentations(user) {
@@ -61,7 +123,7 @@ async function getMyPresentations(user) {
                     content: data.rows[i]._content
                 }
                 jsonPresentation.content.preview_image = await getImagePathById(jsonPresentation.content.preview_image, user.id)
-                console.log(jsonPresentation.content.preview_image)
+                //console.log(jsonPresentation.content.preview_image)
                 jsonPresentationsList.push(jsonPresentation)
             }
         })
@@ -76,5 +138,7 @@ async function getMyPresentations(user) {
 module.exports = {
     getImagePathById: getImagePathById,
     getPresentationById: getPresentationById,
-    getMyPresentations: getMyPresentations
+    getMyPresentations: getMyPresentations,
+    newPresentation: newPresentation,
+    newImage: newImage
 }

@@ -1,4 +1,4 @@
-
+const crypto = require('crypto');
 const path = require('path');
 const http = require('http');
 //const { APP_PORT, APP_IP, APP_PATH } = process.env;
@@ -10,7 +10,20 @@ const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
 const multer  = require('multer')
-let upload = multer({ dest: 'uploads/' })
+
+let storage = multer.diskStorage({
+    destination: 'dist/upload/',
+    filename: function (req, file, cb) {
+        crypto.pseudoRandomBytes(16, function (err, raw) {
+            if (err)
+                return cb(err)
+            //console.log(raw.toString('hex') + path.extname(file.originalname))
+            cb(null, raw.toString('hex') + path.extname(file.originalname))
+        })
+    }
+})
+
+let upload = multer({ storage: storage })
 
 
 server.listen(APP_PORT, APP_IP, () => {
@@ -66,17 +79,28 @@ app.get('/', async (req, res) => {
 });
 
 
-app.post('/', async (req, res) => {
+app.post('/new', upload.single('background'), async function (req, res, next) {
+    //console.log(req.body)
+    console.log('back:' + req.file.filename)
+    console.log('name:' + req.body.presentationName)
+    console.log('slides:' + req.body.countOfSlides)
+    let path = 'upload/' + req.file.filename
 
-    let json = {
-        "form":"kek",
-    }
+    let imageId = await dbFunctions.newImage(req.user, path, 'kek')
 
-    res.status(200);
-    res.send(json);
+
+    console.log('image id returned:' + imageId)
+    dbFunctions.newPresentation(req.user, req.body.presentationName, req.body.countOfSlides, imageId)
+    //dbFunctions.newPresentation(req.user, req.body. )
+    res.redirect('/')
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+})
+
+app.post('/api/v2', (req,res)=>{
+    console.log(req.body)
+    res.send(req.body)
 });
-
-
 app.post('/api/v1', apiHandler);
 
 
@@ -207,6 +231,11 @@ app.get('/kek',  passport.authenticate('session'), (req, res) =>{
     console.log(req.user)
     console.log('It Works')
     res.send("OK")
+});
+
+app.get('/new',  passport.authenticate('session'), (req, res) =>{
+    res.render('newPresentation.ejs')
+
 });
 
 app.post('/newRequest', async (req, res) => {

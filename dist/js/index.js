@@ -85,7 +85,6 @@ $(document).ready(function() {
         allPresentations.forEach((currentPresentation)=> {
             addPresentationToList(currentPresentation)
         })
-
         $('.btn.edit').click(onEditClick)
 
         $('.btn.remove').click(onRemoveClick)
