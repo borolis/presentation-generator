@@ -11,7 +11,7 @@ function onEditClick(event) {
 }
 
 function onRemoveClick(event) {
-    let confirm = window.confirm("Are you sure?")
+    let confirm = window.confirm("Are you sure want to remove?")
     if(confirm)
     {
         let presentationId = event.currentTarget.parentElement.parentElement.parentElement.parentElement.getAttribute('presentationId')
