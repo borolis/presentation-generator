@@ -11,9 +11,22 @@ function onEditClick(event) {
 }
 
 function onRemoveClick(event) {
+    let confirm = window.confirm("Are you sure?")
+    if(confirm)
+    {
+        let presentationId = event.currentTarget.parentElement.parentElement.parentElement.parentElement.getAttribute('presentationId')
+        console.log('remove:' + presentationId)
+        axios.post('/api/v1', {query: "deletePresentation", data:{presentationId:presentationId}})
+            .then((response) => {
+                window.location.href = '/'
 
-    let presentationId = event.currentTarget.parentElement.parentElement.parentElement.parentElement.getAttribute('presentationId')
-    console.log('remove:' + presentationId)
+            })
+            .catch((error) => {
+                alert(error)
+            })
+
+    }
+
 }
 
 function addPresentationToList(currentPresentation)
@@ -44,7 +57,7 @@ function addPresentationToList(currentPresentation)
             "                            <button type=\"submit\" class=\"btn edit\">\n" +
             "                                <i class=\"fa fa-pencil\"></i>\n" +
             "                            </button>\n" +
-            "                            <button type=\"submit\" class=\"btn remove\">\n" +
+            "                            <button type=\"submit\" class=\"btn remove confirm\">\n" +
             "                                <i class=\"fa fa-trash-o\"></i>\n" +
             "                            </button>\n" +
             "                            <p class=\"presentationName\"></p>\n" +
@@ -71,6 +84,7 @@ function addPresentationToList(currentPresentation)
         presentationHtml.children().children().children().find('info').find('presentationName').html(currentPresentation.content.name)
 
     $(".row.presentations").last().append(presentationHtml)
+
 
     countOfBlocks++
 }

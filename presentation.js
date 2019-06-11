@@ -36,16 +36,17 @@ const passport = require('./auth.js');
 
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
+const jsonParser = bodyParser.json({limit: '50mb'});
+const urlencodedParser = bodyParser.urlencoded({limit: '50mb', extended: true});
 const cookieParser = require('cookie-parser');
 const favicon = require('serve-favicon');
 
 const pgSession = require('connect-pg-simple')(session);
 let dbFunctions = require('./DBFunctions.js')
 
+
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser({limit: '50mb'}));
 app.use(session({
     store: new pgSession({
         pool: db,
@@ -152,11 +153,18 @@ async function apiHandler(req, res) {
         }
 
         case 'getPresentation': {
-            console.log('here1')
+            console.log('get presentation')
             jsonResponse.result = {}
             jsonResponse.result.presentation = await getPresentation(req)
 
-            ///TODO get one presentation by ID
+            break;
+        }
+
+        case 'deletePresentation': {
+            console.log('delete presentation')
+            jsonResponse.result = {}
+            jsonResponse.result.presentation = await deletePresentation(req)
+
             break;
         }
 
@@ -306,7 +314,20 @@ async function getPresentation(req)
 }
 
 
+async function deletePresentation(req)
+{
+    let presentationId = req.body.data.presentationId
+    let user = req.user
 
+    //console.log('presentationId')
+    //console.log(presentationId)
+    //console.log('user')
+    //console.log(user)
+
+    let presentation = {}
+    presentation = await dbFunctions.deletePresentationById(presentationId, user);
+    return presentation
+}
 
 async function updateSlide(req)
 {

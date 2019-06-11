@@ -44,6 +44,22 @@ async function getPresentationById(presentationId, user) {
         });
 }
 
+async function deletePresentationById(presentationId, user) {
+     console.log('deletePresentationById');
+    let sql = 'DELETE FROM presentations where _id = $1 and _owner_id = $2',
+        values = [presentationId, user.id];
+    return await db.query(sql, values)
+        .then(async (data) => {
+            console.log(data);
+            return true
+        })
+        .catch((err) => {
+            console.log(err);
+            return null;
+        });
+}
+
+
 async function getSlidesForPresentation(presentationId, user)
 {
     let slides = []
@@ -263,6 +279,7 @@ async function getMyPresentations(user) {
 module.exports = {
     getImagePathById: getImagePathById,
     getPresentationById: getPresentationById,
+    deletePresentationById: deletePresentationById,
     getMyPresentations: getMyPresentations,
     newPresentation: newPresentation,
     updatePresentation: updatePresentation,
