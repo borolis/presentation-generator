@@ -4,10 +4,12 @@ $(function() {
 });
 
 let imageUrl = "../background.jpg"
-
+let zip
 let currentLayer
 let textEditor
 let slideDiv
+
+let sly
 
 let currentPresentationId
 let currentPresentation
@@ -112,7 +114,7 @@ function displaySlider()
 	let $wrap = $frame.parent()
 
 	// Call Sly on frame
-	let sly = new Sly($frame, {
+	sly = new Sly($frame, {
 			horizontal: 1,
 			itemNav: 'centered',
 			smart: 1,
@@ -140,40 +142,25 @@ function displaySlider()
 				currentSlidePosition = itemIndex
 				if(previousSlidePosition !== -1)
 				{
-					//debugger
 					let slideDivChildren = slideDiv.children('.draggable')
 					console.log('slideDivChildren')
 					console.log(slideDivChildren)
 					allSlides[previousSlidePosition].content.html = []
 					for(let i = 0; i < slideDivChildren.length; i++)
 					{
-						// запихать обратно в массив слайдов
 						allSlides[previousSlidePosition].content.html.push({item:slideDivChildren[i].outerHTML})
 					}
 
-					//запихать в базу
 					pushSlideToServer(allSlides[previousSlidePosition])
 					console.log(allSlides[previousSlidePosition])
-
 				}
-				
 
-
-				console.log('содержимое slide div')
-				console.log(slideDiv.children('.draggable'))
-
-
-				
 				currentSlide = allSlides[itemIndex]
 
 				console.log('currentSlide')
 				console.log(currentSlide)
-
-
-				//alert(eventName)
 				console.log('itemIndex')
 				console.log(itemIndex)
-
 				console.log('slideDiv')
 				console.log(slideDiv)
 
@@ -184,10 +171,7 @@ function displaySlider()
 					slideDiv.append(currentSlide.content.html[i].item)
 				}
 				updateDraggable()
-
 				updateClickHandlers()
-				//console.log(sly)
-
 			}
 		}
 	)
@@ -236,10 +220,39 @@ $(document).ready(function () {
 			});
 	}
 
-	$("#btnSave").click(function () {
+	async function savePresentation() {
+		zip = new JSZip();
+		for (let i = 0; i < allSlides.length; i++) {
+			sly.activate(i)
+			await html2canvas(slideDiv.get(0), {
+				allowTaint: true
+			}).then((canvas) => {
+				let imgData = canvas.toDataURL("image/jpeg", 1.0);
+				zip.file("slide_" + i + ".jpeg", imgData.split('base64,')[1], {base64: true});
+			}).catch((err) => {
+				console.log("error" + err)
+			})
+		}
+
+		zip.generateAsync({
+			type: "blob"
+		}).then(function (content) {
+			download(content, currentPresentation.content.name +'.zip')
+			//window.location.href = "data:application/zip;base64," + content;
+		})
+	}
+
+	$("#btnSave").click(()=> {
+		savePresentation()
+	})
+
+/*
+	$("#btnSave").click(()=> {
+
 		html2canvas(slideDiv.get(0), {
 			allowTaint: true
-		}).then(function (canvas) {
+		})
+			.then(function (canvas) {
 			document.body.appendChild(canvas)
 
 			let base64image = canvas.toDataURL('image/png')
@@ -251,7 +264,7 @@ $(document).ready(function () {
 			console.log(err)
 		})
 	})
-
+*/
 
 	$("#btnAddLayer").click(function () {
 

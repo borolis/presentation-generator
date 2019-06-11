@@ -323,9 +323,12 @@ async function deletePresentation(req)
     //console.log(presentationId)
     //console.log('user')
     //console.log(user)
-
+    let isSlidesDeleted = dbFunctions.deleteSlidesByPresentationId(presentationId, user)
     let presentation = {}
-    presentation = await dbFunctions.deletePresentationById(presentationId, user);
+
+    if(isSlidesDeleted) {
+        presentation = await dbFunctions.deletePresentationById(presentationId, user);
+    }
     return presentation
 }
 
